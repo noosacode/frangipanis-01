@@ -45,15 +45,83 @@ async function loadTree() {
   <p><strong>Outside Notes:</strong> ${tree.outsideNotes || ""}</p>
 
   <p>
-    <button id="updateButton">Update</button>
+    <p>
+  <button id="updateButton">Update</button>
+  <button id="seeAllButton">See All Data for ${tree.tag}</button>
+</p>
   </p>
 `;
 
   updateButton.addEventListener("click", function () {
-    results.innerHTML = createFormHTML(tree);
-    attachFormListeners(tree);
+    results.innerHTML = `
+      <h2>Update WooCommerce Status</h2>
+
+      <p><strong>Tag:</strong> ${tree.tag}</p>
+
+      <p><strong>Colour:</strong> ${tree.colour}</p>
+
+      <p>
+        <strong>WC Status:</strong>
+        <select id="wcStatusInput">
+          <option value="Never added to WC" ${
+            tree.wcStatus === "Never added to WC" ? "selected" : ""
+          }>Never added to WC</option>
+
+          <option value="on" ${
+            tree.wcStatus === "on" ? "selected" : ""
+          }>on</option>
+
+          <option value="off" ${
+            tree.wcStatus === "off" ? "selected" : ""
+          }>off</option>
+
+          <option value="sold-on" ${
+            tree.wcStatus === "sold-on" ? "selected" : ""
+          }>sold-on</option>
+
+          <option value="sold-off" ${
+            tree.wcStatus === "sold-off" ? "selected" : ""
+          }>sold-off</option>
+        </select>
+      </p>
+      
+      <button id="saveButton">Save Changes</button>
+      <button id="cancelButton">Cancel</button>
+    `;
+
+    const saveButton = document.getElementById("saveButton");
+
+    saveButton.addEventListener("click", async function () {
+      const updatedWcStatus = document.getElementById("wcStatusInput").value;
+
+      const response = await fetch(`/api/trees/${tree.tag}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          wcStatus: updatedWcStatus,
+        }),
+      });
+
+      const savedTree = await response.json();
+
+      loadTree();
+    });
+
+    const cancelButton = document.getElementById("cancelButton");
+
+    cancelButton.addEventListener("click", function () {
+      loadTree();
+    });
   });
 
+  const seeAllButton = document.getElementById("seeAllButton");
+
+  seeAllButton.addEventListener("click", function () {
+    window.location.href = `/forms/tree.html?tag=${tree.tag}`;
+  });
 }
 
 loadTree();
