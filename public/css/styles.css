@@ -1,8 +1,38 @@
 body {
     font-family: Arial, sans-serif;
     margin: 40px;
+    text-align: center;
 }
 
 h1 {
-    color: greenyellow;
+    color: grey;
+}
+
+table {
+    margin: auto;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 5px 15px;
+}
+
+td:first-child {
+    text-align: left;
+}
+
+td:last-child {
+    text-align: left;
+}
+
+.job-list {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+.job-list th,
+.job-list td {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    text-align: left;
 }

@@ -68,7 +68,12 @@ const frangipaniTreeSchema = new mongoose.Schema(
     },
 
     notes: String,
+
+    outsideNotes: String,
+
+    insideNotes: String,
   },
+  
   {
     collection: "frangipanitrees",
   },

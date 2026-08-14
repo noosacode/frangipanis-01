@@ -124,6 +124,14 @@ async function findTree() {
             <strong>Notes:</strong>
             <input type="text" id="notesInput" value="${tree.notes || ""}">
         </p>
+        <p>
+            <strong>Inside Notes:</strong>
+            <input type="text" id="insideNotesInput" value="${tree.insideNotes || ""}">
+        </p>
+        <p>
+            <strong>Outside Notes:</strong>
+            <input type="text" id="outsideNotesInput" value="${tree.outsideNotes || ""}">
+        </p>
 
         <button id="saveButton">Save Changes</button>
         <button id="cancelButton">Cancel</button>
@@ -156,6 +164,8 @@ async function findTree() {
         soilPercent: document.getElementById("soilPercentInput").value,
         dateAdded: document.getElementById("dateAddedInput").value,
         notes: document.getElementById("notesInput").value,
+        insideNotes: document.getElementById("insideNotesInput").value,
+        outsideNotes: document.getElementById("outsideNotesInput").value,
       };
       const currentTag = tree.tag;
 
@@ -265,6 +275,14 @@ async function findTree() {
             <td><strong>Notes</strong></td>
             <td>${tree.notes || ""}</td>
         </tr>
+                <tr>
+            <td><strong>Inside Notes</strong></td>
+            <td>${tree.insideNotes || ""}</td>
+        </tr>
+                <tr>
+            <td><strong>Outside Notes</strong></td>
+            <td>${tree.outsideNotes || ""}</td>
+        </tr>
     </table>
 
     <button id="updateButton">Update</button>
@@ -287,3 +305,11 @@ tagInput.addEventListener("keydown", function (event) {
     findTree();
   }
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+const urlTag = urlParams.get("tag");
+
+if (urlTag) {
+  tagInput.value = urlTag;
+  findTree();
+}

@@ -77,6 +77,31 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/public/index.html");
 });
 
+app.get("/api/trees/turnon", auth, async function (req, res) {
+  try {
+    const trees = await FrangipaniTree.find({
+      sellScore: { $gt: 5 },
+
+      $or: [
+        { wcStatus: "off" },
+
+        { wcStatus: { $exists: false } },
+
+        { wcStatus: "" },
+      ],
+      
+    }).sort({
+      sellScore: -1,
+      price: -1,
+      position: 1,
+    });
+
+    res.json(trees);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/trees/:tag", auth, async function (req, res) {
   const tree = await FrangipaniTree.findOne({
     tag: req.params.tag,
