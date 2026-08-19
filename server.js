@@ -102,6 +102,44 @@ app.get("/api/trees/turnon", auth, async function (req, res) {
   }
 });
 
+app.get("/api/trees/search", auth, async function (req, res) {
+  try {
+    const query = {};
+    const { tag, colour, wcStatus, bagSize, minPosition, maxPosition, minSellScore, keywords } = req.query;
+
+    const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    if (tag?.trim()) {
+      query.tag = { $regex: escapeRegex(tag.trim()), $options: "i" };
+    }
+
+    for (const [field, value] of Object.entries({ colour, wcStatus, bagSize })) {
+      if (value?.trim()) query[field] = value.trim();
+    }
+
+    const position = {};
+    if (minPosition !== "" && Number.isFinite(Number(minPosition))) position.$gte = Number(minPosition);
+    if (maxPosition !== "" && Number.isFinite(Number(maxPosition))) position.$lte = Number(maxPosition);
+    if (Object.keys(position).length) query.position = position;
+
+    if (minSellScore !== "" && Number.isFinite(Number(minSellScore))) {
+      query.sellScore = { $gte: Number(minSellScore) };
+    }
+
+    if (keywords?.trim()) {
+      const safeKeywords = escapeRegex(keywords.trim());
+      query.$or = ["notes", "insideNotes", "outsideNotes"].map((field) => ({
+        [field]: { $regex: safeKeywords, $options: "i" },
+      }));
+    }
+
+    const trees = await FrangipaniTree.find(query).sort({ position: 1, tag: 1 });
+    res.json(trees);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/trees/:tag", auth, async function (req, res) {
   const tree = await FrangipaniTree.findOne({
     tag: req.params.tag,
